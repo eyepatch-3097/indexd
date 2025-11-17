@@ -1,20 +1,81 @@
 {% extends "base.html" %}
 
-{% block title %}Indexd · Home{% endblock %}
+{% block title %}Home · Indexd{% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="col-lg-8">
-      <h1 class="display-5 fw-semibold mb-3">
-        Welcome to Indexd
-      </h1>
-      <p class="lead text-secondary">
-        Soon, this will be your universal log of everything you watch, read, listen to, and love.
-      </p>
+<div class="row mb-4">
+  <div class="col-lg-8">
+    <h1 class="h3 mb-2 fw-semibold">
+      Hey, {{ request.user.username }}
+    </h1>
+    <p class="text-secondary mb-3">
+      This is your Indexd home. Add something you loved, or build a new list.
+    </p>
 
-      <div class="alert alert-info mt-4">
-        Project setup is complete. Next we’ll add real features like user accounts, items, and lists.
-      </div>
+    <div class="d-flex gap-2 mb-4">
+      <a href="{% url 'catalog:add_item' %}" class="btn btn-primary">
+        + Add item
+      </a>
+      <!-- later: dedicated create-list page -->
+      <a href="{% url 'catalog:add_item' %}" class="btn btn-outline-light">
+        + Create list
+      </a>
     </div>
   </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-7 mb-4">
+    <h2 class="h5 mb-3">Recently added</h2>
+
+    {% if recent_items %}
+      <div class="list-group">
+        {% for item in recent_items %}
+          <div class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold">{{ item.title }}</div>
+              <div class="small text-muted">
+                {{ item.get_item_type_display }} ·
+                {% if item.url %}
+                  <a href="{{ item.url }}" class="link-primary" target="_blank">Open</a>
+                {% else %}
+                  No link yet
+                {% endif %}
+              </div>
+            </div>
+            {% if item.thumbnail_url %}
+              <img src="{{ item.thumbnail_url }}" alt="" class="img-thumbnail" style="width: 48px; height: 48px; object-fit: cover;">
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-secondary">
+        You haven't added anything yet. Start with the <strong>Add item</strong> button.
+      </p>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-5 mb-4">
+    <h2 class="h5 mb-3">Your lists</h2>
+
+    {% if user_lists %}
+      <div class="list-group">
+        {% for l in user_lists %}
+          <a href="{% url 'catalog:list_detail' slug=l.slug %}" class="list-group-item list-group-item-action bg-dark text-light">
+            <div class="fw-semibold">{{ l.title }}</div>
+            <div class="small text-muted">
+              {{ l.list_items.count }} item{{ l.list_items.count|pluralize }} ·
+              {% if l.is_public %}Public{% else %}Private{% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-secondary">
+        You don't have any lists yet. When you add an item, you can create your first list.
+      </p>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Add item · Indexd{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-7">
+    <h1 class="h3 mb-3 fw-semibold">Add an item</h1>
+    <p class="text-secondary mb-4">
+      Choose what you're adding, link it, and drop it into one of your lists.
+    </p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.title.id_for_label }}">Title</label>
+        {{ form.title }}
+        {% for error in form.title.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.item_type.id_for_label }}">Category</label>
+        {{ form.item_type }}
+        {% for error in form.item_type.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.url.id_for_label }}">URL</label>
+        {{ form.url }}
+        <div class="form-text">
+          Link to where this lives (YouTube, blog, Spotify, Goodreads, etc.).
+        </div>
+        {% for error in form.url.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.thumbnail_url.id_for_label }}">Thumbnail URL</label>
+        {{ form.thumbnail_url }}
+        <div class="form-text">
+          Optional. If omitted, we'll later fetch from APIs or show a fallback.
+        </div>
+        {% for error in form.thumbnail_url.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <hr class="my-4">
+
+      <h2 class="h6 mb-3">Add to a list</h2>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.list.id_for_label }}">Existing list</label>
+        {{ form.list }}
+        {% if not form.list.field.queryset %}
+          <div class="form-text">
+            You don't have any lists yet. You can create one below.
+          </div>
+        {% endif %}
+        {% for error in form.list.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.new_list_title.id_for_label }}">New list title</label>
+        {{ form.new_list_title }}
+        <div class="form-text">
+          If you enter a title here, a new list will be created and this item will be added to it.
+        </div>
+        {% for error in form.new_list_title.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-check mb-4">
+        {{ form.new_list_is_public }}
+        <label class="form-check-label" for="{{ form.new_list_is_public.id_for_label }}">
+          Make new list public
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Save item
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

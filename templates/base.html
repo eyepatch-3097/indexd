@@ -28,21 +28,27 @@
       </a>
 
       <ul class="navbar-nav flex-row align-items-center">
-        <li class="nav-item me-3">
-          <a href="{% url 'core:home' %}" class="nav-link">Home</a>
-        </li>
+  <li class="nav-item me-3">
+    <a href="{% url 'core:home' %}" class="nav-link">Home</a>
+  </li>
 
-        {% if request.user.is_authenticated %}
-          <li class="nav-item me-3">
-            <a href="{% url 'accounts:profile' %}" class="nav-link">
-              {{ request.user.username }}
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light btn-sm">
-              Log out
-            </a>
-          </li>
+  {% if request.user.is_authenticated %}
+    <li class="nav-item me-3">
+      <a href="{% url 'catalog:add_item' %}" class="btn btn-sm btn-outline-info">
+        + Add item
+      </a>
+    </li>
+    <li class="nav-item me-3">
+      <a href="{% url 'accounts:profile' %}" class="nav-link">
+        {{ request.user.username }}
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light btn-sm">
+        Log out
+      </a>
+    </li>
+  
         {% else %}
           <li class="nav-item me-2">
             <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-sm">
