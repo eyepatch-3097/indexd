@@ -1,0 +1,32 @@
+<div class="mb-3">
+  <label class="form-label" for="id_title">Title</label>
+  <input type="text" name="title" maxlength="255" class="form-control"
+         id="id_title" value="{{ title }}">
+</div>
+
+<div class="mb-3">
+  <label class="form-label" for="id_item_type">Category</label>
+  <select name="item_type" class="form-control" id="id_item_type">
+    <option value="movie" {% if item_type == "movie" %}selected{% endif %}>Movie / TV / Anime</option>
+    <option value="book" {% if item_type == "book" %}selected{% endif %}>Book</option>
+    <option value="music" {% if item_type == "music" %}selected{% endif %}>Music</option>
+    <option value="game" {% if item_type == "game" %}selected{% endif %}>Game</option>
+    <option value="video" {% if item_type == "video" %}selected{% endif %}>YouTube / Video</option>
+    <option value="podcast" {% if item_type == "podcast" %}selected{% endif %}>Podcast</option>
+    <option value="article" {% if item_type == "article" %}selected{% endif %}>Article / Blog</option>
+    <option value="other" {% if item_type == "other" %}selected{% endif %}>Other</option>
+  </select>
+</div>
+
+<div class="mb-3">
+  <label class="form-label" for="id_url">URL</label>
+  <input type="url" name="url" class="form-control" id="id_url" value="{{ url }}">
+  <div class="form-text">
+    Link to where this lives (YouTube, blog, TMDB, Open Library, etc.).
+  </div>
+</div>
+
+<div class="mb-3">
+  <label class="form-label" for="id_thumbnail_url">Thumbnail URL</label>
+  <input type="url" name="thumbnail_url" class="form-control" id="id_thumbnail_url" value="{{ thumbnail_url }}">
+</div>

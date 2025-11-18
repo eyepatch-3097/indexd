@@ -1,0 +1,42 @@
+{% if error %}
+  <div class="alert alert-warning py-2 small mb-2">
+    {{ error }}
+  </div>
+{% endif %}
+
+{% if results %}
+  <div class="list-group mb-3">
+    {% for r in results %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="me-3">
+          <div class="fw-semibold">{{ r.title }}</div>
+          {% if r.meta.subtitle %}
+            <div class="small text-muted">{{ r.meta.subtitle }}</div>
+          {% endif %}
+          <div class="small text-muted">
+            {{ r.source|title }}
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          {% if r.thumbnail_url %}
+            <img src="{{ r.thumbnail_url }}" alt="" class="img-thumbnail"
+                 style="width: 48px; height: 48px; object-fit: cover;">
+          {% endif %}
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            hx-get="{% url 'catalog:prefill_from_external' %}?source={{ r.source }}&item_type={{ r.item_type }}&title={{ r.title|urlencode }}&url={{ r.url|urlencode }}&thumbnail_url={{ r.thumbnail_url|urlencode }}"
+            hx-target="#item-fields"
+            hx-swap="innerHTML"
+          >
+            Use
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  {% if not error %}
+    <p class="text-secondary small mb-0">No results found.</p>
+  {% endif %}
+{% endif %}

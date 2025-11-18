@@ -4,6 +4,12 @@ from django.urls import reverse
 from django.db import models
 from .forms import ItemCreateForm
 from .models import Item, List, ListItem
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_GET
+from .services import tmdb, openlibrary
+
+
 
 
 @login_required
@@ -59,3 +65,68 @@ def add_item(request):
 def list_detail(request, slug):
     list_obj = get_object_or_404(List, slug=slug, owner=request.user)
     return render(request, "catalog/list_detail.html", {"list": list_obj})
+
+
+@require_GET
+@login_required
+def external_search(request):
+    """
+    HTMX endpoint to search external APIs by item_type & query.
+    Returns HTML snippet with search results.
+    """
+    # match the field names used in add_item.html
+    item_type = request.GET.get("search_item_type")
+    query = request.GET.get("search_query", "").strip()
+
+    if not item_type or not query:
+        html = render_to_string(
+            "catalog/partials/search_results.html",
+            {"results": [], "error": "Please choose a category and type something."},
+            request=request,
+        )
+        return HttpResponseBadRequest(html)
+
+    if item_type == "movie":
+        results = tmdb.search_movies(query)
+    elif item_type == "book":
+        results = openlibrary.search_books(query)
+    else:
+        results = []
+
+    html = render_to_string(
+        "catalog/partials/search_results.html",
+        {"results": results, "error": None, "item_type": item_type},
+        request=request,
+    )
+    return HttpResponse(html)
+
+
+@require_GET
+@login_required
+def prefill_from_external(request):
+    """
+    HTMX endpoint to prefill item fields from a chosen external result.
+    Expects ?source=...&external_id=...&title=...&url=...&thumbnail=...
+    For now we'll trust the client-provided data from the search results.
+    """
+    source = request.GET.get("source")
+    title = request.GET.get("title", "")
+    item_type = request.GET.get("item_type", "")
+    url = request.GET.get("url", "")
+    thumbnail_url = request.GET.get("thumbnail_url", "")
+
+    if not title or not item_type:
+        return HttpResponseBadRequest("Missing data")
+
+    context = {
+        "title": title,
+        "item_type": item_type,
+        "url": url,
+        "thumbnail_url": thumbnail_url,
+    }
+    html = render_to_string(
+        "catalog/partials/item_fields_prefilled.html",
+        context,
+        request=request,
+    )
+    return HttpResponse(html)
